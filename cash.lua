@@ -1,9 +1,9 @@
 local function split(input)
-    local words = {}
+    local t = {}
     for word in string.gmatch(input, "%S+") do
-        table.insert(words, word)
+        table.insert(t, word)
     end
-    return words
+    return t
 end
 
 local function runCommand(cmdline)
@@ -17,9 +17,9 @@ local function runCommand(cmdline)
         return false
     elseif cmd == "cd" then
         local dir = args[1] or "/"
-        local path = shell.resolve(dir)
-        if fs.exists(path) and fs.isDir(path) then
-            shell.setDir(path)
+        local resolved = shell.resolve(dir)
+        if fs.exists(resolved) and fs.isDir(resolved) then
+            shell.setDir(fs.combine(shell.dir(), dir))
         else
             print("cd: " .. dir .. ": No such directory")
         end
@@ -38,7 +38,8 @@ local function runCommand(cmdline)
             local items = fs.list(path)
             table.sort(items)
             for _, item in ipairs(items) do
-                if fs.isDir(fs.combine(path, item)) then
+                local full = fs.combine(path, item)
+                if fs.isDir(full) then
                     print(item .. "/")
                 else
                     print(item)
