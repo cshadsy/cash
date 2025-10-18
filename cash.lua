@@ -6,10 +6,6 @@ local function split(input)
     return words
 end
 
-local function resolvePath(path)
-    return fs.combine(shell.dir(), path or "")
-end
-
 local function runCommand(cmdline)
     local args = split(cmdline)
     local cmd = args[1]
@@ -21,11 +17,11 @@ local function runCommand(cmdline)
         return false
     elseif cmd == "cd" then
         local dir = args[1] or "/"
-        local path = resolvePath(dir)
+        local path = shell.resolve(dir)
         if fs.exists(path) and fs.isDir(path) then
-            shell.setDir(fs.combine(shell.dir(), dir))
+            shell.setDir(path)
         else
-            print("cd: no such directory: " .. dir)
+            print("cd: " .. dir .. ": No such directory")
         end
         return true
     elseif cmd == "help" then
@@ -33,7 +29,7 @@ local function runCommand(cmdline)
         return true
     elseif cmd == "ls" then
         local target = args[1] or "."
-        local path = resolvePath(target)
+        local path = shell.resolve(target)
         if not fs.exists(path) then
             print("ls: cannot access '" .. target .. "': No such file or directory")
         elseif not fs.isDir(path) then
