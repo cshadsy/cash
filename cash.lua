@@ -56,7 +56,8 @@ local function runCommand(cmdline)
 
     return true
 end
-
+term.clear()
+term.setCursorPos(1, 1)
 print("Welcome")
 while true do
     io.write(shell.dir() .. " $ ")
