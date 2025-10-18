@@ -6,6 +6,10 @@ local function split(input)
     return words
 end
 
+local function resolvePath(path)
+    return fs.combine(shell.dir(), path or "")
+end
+
 local function runCommand(cmdline)
     local args = split(cmdline)
     local cmd = args[1]
@@ -17,28 +21,23 @@ local function runCommand(cmdline)
         return false
     elseif cmd == "cd" then
         local dir = args[1] or "/"
-        if fs.exists(dir) and fs.isDir(dir) then
-            shell.setDir(shell.resolve(dir))
+        local path = resolvePath(dir)
+        if fs.exists(path) and fs.isDir(path) then
+            shell.setDir(fs.combine(shell.dir(), dir))
         else
             print("cd: no such directory: " .. dir)
         end
         return true
     elseif cmd == "help" then
-        print("Custom bash-like shell for ComputerCraft")
-        print("Built-in commands:")
-        print("  cd [dir]      - Change directory")
-        print("  ls            - List files in current directory")
-        print("  help          - Show this help message")
-        print("  exit          - Exit the shell")
-        print("External programs are resolved via shell.run()")
+        print("Built-in commands: cd, ls, help, exit")
         return true
     elseif cmd == "ls" then
-        local listDir = args[1] or shell.dir()
-        local path = shell.resolve(listDir)
+        local target = args[1] or "."
+        local path = resolvePath(target)
         if not fs.exists(path) then
-            print("ls: cannot access '" .. listDir .. "': No such file or directory")
+            print("ls: cannot access '" .. target .. "': No such file or directory")
         elseif not fs.isDir(path) then
-            print(listDir)
+            print(target)
         else
             local items = fs.list(path)
             table.sort(items)
@@ -61,7 +60,7 @@ local function runCommand(cmdline)
     return true
 end
 
-print("CASH running on CraftOS v1.9")
+print("Custom Bash-like Shell for ComputerCraft")
 while true do
     io.write(shell.dir() .. " $ ")
     local line = read()
