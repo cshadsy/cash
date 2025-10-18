@@ -57,7 +57,7 @@ local function runCommand(cmdline)
     return true
 end
 
-print("Custom Bash-like Shell for ComputerCraft")
+print("Welcome")
 while true do
     io.write(shell.dir() .. " $ ")
     local line = read()
@@ -66,4 +66,4 @@ while true do
     end
 end
 
-print("Session ended.")
+print("Goodbye.")
